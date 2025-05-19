@@ -89,6 +89,11 @@ function displayResults(cards) {
         deckAdd.alt = "Add to deck";
         deckAdd.title = "Add to deck";
 
+        const deckMin = document.createElement("img");
+        deckMin.src = "https://cdn-icons-png.flaticon.com/512/11527/11527831.png";
+        deckMin.alt = "Subtract from deck";
+        deckMin.title = "Subtract from deck";
+
         deckAdd.style.position = "absolute";
         deckAdd.style.top = "8px";       // Distance from top
         deckAdd.style.right = "-12px";     // Distance from right
@@ -96,6 +101,14 @@ function displayResults(cards) {
         deckAdd.style.height = "50px";
         deckAdd.style.zIndex = "2";
         deckAdd.style.cursor = "pointer";
+
+        deckMin.style.position = "absolute";
+        deckMin.style.top = "60px";       // Distance from top
+        deckMin.style.right = "-12px";     // Distance from right
+        deckMin.style.width = "50px";    // Adjust size as needed
+        deckMin.style.height = "50px";
+        deckMin.style.zIndex = "2";
+        deckMin.style.cursor = "pointer";
 
         const deckCount = document.createElement("p");
         deckCount.textContent = "0";
@@ -107,7 +120,7 @@ function displayResults(cards) {
         
         deckCount.style.position = "absolute"; 
         deckCount.style.right = "-7px";        
-        deckCount.style.top = "60px";          
+        deckCount.style.top = "100px";          
         deckCount.style.zIndex = "2";
         deckCount.style.fontFamily = "Arial, sans-serif";
         deckCount.style.fontSize = "30px";
@@ -141,8 +154,9 @@ function displayResults(cards) {
 
         cardContainer.appendChild(deckCount);
         cardContainer.appendChild(deckAdd);
+        cardContainer.appendChild(deckMin);
         cardLink.appendChild(img);
-        cardLink.appendChild(cardText);
+
 
         // Checks to see if the image is clicked //
         cardLink.addEventListener("click", function (event) {
@@ -152,6 +166,9 @@ function displayResults(cards) {
 
         deckAdd.addEventListener("click", function (event) {
             addToDeck(card);  // Call the function to add card to deck
+        });
+        deckMin.addEventListener("click", function (event) {
+            subtractFromDeck(card);  // Call the function to add card to deck
         });
         
 
@@ -188,12 +205,20 @@ function saveDeck() {
 
 }
 
+function savedDecksUpdate() {
+    let name = localStorage(key);
+    
+    const deckContainer = document.getElementbyId("div");
+
+}
+
 function addToDeck(card) {
     const totalCount = Object.values(deck.cards).reduce((sum, cardObj) => sum + cardObj.count, 0);
     let hasLeader = false;
 
     // Check for leader card and total card count restrictions
     for (let id in deck.cards) {
+
         if (deck.cards[id].Type === "Leader") {
             hasLeader = true;
         }
@@ -249,6 +274,31 @@ function addToDeck(card) {
     if (countDisplay) {
         countDisplay.textContent = deck.cards[card.Id].count;
     }
+    updateDeckDisplay();
+}
+function subtractFromDeck(card) {
+    if (!deck.cards[card.Id]) {
+        alert("This card is not in the deck!");
+        return;
+    }
+
+    if (deck.cards[card.Id].count > 1) {
+        deck.cards[card.Id].count--;
+    } else {
+        // count is 1, so remove the card entirely
+        delete deck.cards[card.Id];
+    }
+
+    // Update the count display or show zero if removed
+    const countDisplay = document.getElementById(`deckCount-${card.Id}`);
+    if (countDisplay) {
+        if (deck.cards[card.Id]) {
+            countDisplay.textContent = deck.cards[card.Id].count;
+        } else {
+            countDisplay.textContent = "0";
+        }
+    }
+
     updateDeckDisplay();
 }
 

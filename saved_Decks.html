@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Saved Decks</title>
     <style>
         #closeMenu {
@@ -27,19 +27,17 @@
             text-align: center;
             cursor: pointer;
             transition: transform 0.2s ease, background-color 0.2s ease;
+            user-select: none;
         }
-
         .deck-card:hover {
             transform: scale(1.05);
             background-color: #f4f4f4;
         }
-
         .build-new {
             background-color: #d1e7dd;
             border: 2px dashed #28a745;
             color: #155724;
         }
-
         .build-new:hover {
             background-color: #c3e6cb;
         }
@@ -47,15 +45,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /*gap: 10px;*/
             margin-bottom: 20px;
         }
-
         #menuButton {
-            padding: 8px 10px; /* smaller padding */
-            font-size: 18px;   /* icon-sized font */
-            width: 40px;       /* fixed width for compact size */
-            height: 40px;      /* fixed height for square shape */
+            padding: 8px 10px;
+            font-size: 18px;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
             background-color: #333;
             color: white;
@@ -66,7 +62,6 @@
             justify-content: center;
             transition: background-color 0.3s ease;
         }
-
         #menuButton:hover {
             background-color: #555;
         }
@@ -74,15 +69,14 @@
             background-color: #ECE2D0;
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* Keeps background in place while scrolling */
+            background-attachment: fixed;
             font-family: Arial, sans-serif;
             padding: 20px;
-            }
-            
+        }
         .menuSidebar {
             position: fixed;
             top: 0;
-            left: -250px; /* hidden by default */
+            left: -250px;
             width: 250px;
             height: 100%;
             background-color: #333;
@@ -90,54 +84,129 @@
             padding-top: 60px;
             transition: 0.5s;
             z-index: 1;
-            }
+        }
+        .menuSidebar ul {
+            list-style: none;
+            padding: 10px;
+            background: #444;
+            color: white;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .menuSidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+        }
+        .menuSidebar a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    
-    <div class = "top-bar">
+    <div class="top-bar">
         <button id="menuButton">☰</button>
     </div>
 
-    <div id="menuSidebar" class = "menuSidebar">
-        <ul style="list-style: none; padding: 10px; background: #444; color: white; border-radius: 5px; margin: 10px 0;">
-            <li><a href="index.html" style="color: rgb(255, 255, 255); text-decoration: none;">Card search</a></li>
-            <li><a href="saved_Decks.html" style="color: rgb(255, 255, 255); text-decoration: none;">Saved Decks</a></li>
-            <li><a id = "closeMenu"; style="color: rgb(255, 255, 255); text-decoration: none;">Close menu</a></li>    
+    <div id="menuSidebar" class="menuSidebar">
+        <ul>
+            <li><a href="index.html">Card search</a></li>
+            <li><a href="saved_Decks.html">Saved Decks</a></li>
+            <li><a id="closeMenu" href="#">Close menu</a></li>    
         </ul>
     </div>
     
-    <div class="deck-grid">
-        <div class="deck-card">
-          <span>Straw Hat Pirates</span>
+    <div class="deck-grid" id="deckGrid">
+        <div class="deck-card build-new" onclick="startNewDeck()">
+            <span>Build a Deck!➕</span>
         </div>
-        <div class="deck-card">
-          <span>Kaido Aggro</span>
-        </div>
-        <div class="deck-card build-new" onclick="window.location.href='index.html'">
-            <span>Build a Deck!➕ </span>
-          </div>
-      </div>
-
+    </div>
     <script>
+        function startNewDeck() {
+
+            localStorage.removeItem("MS_selectedDeckToLoad");
+            localStorage.removeItem("MS_tempDeck");
+            window.location.href = 'index.html';
+        }
+    </script>
+    <script>
+        // Sidebar toggle
         const menuButton = document.getElementById('menuButton');
         const menuSidebar = document.getElementById('menuSidebar');
-        const menuClose = document.getElementById("menuClose")
+        const closeMenu = document.getElementById('closeMenu');
 
-    
         menuButton.addEventListener('click', () => {
-                menuSidebar.style.left = '0';
+            menuSidebar.style.left = '0';
         });
 
-        closeMenu.addEventListener('click', () => {
+        closeMenu.addEventListener('click', (e) => {
+            e.preventDefault();
             menuSidebar.style.left = '-250px';
         });
 
-        menuClose.addEventListener('click', () => {
-            menuSidebar.style.left = '-250px';
-            
-        });
+        // Fetch all saved decks from localStorage (keys starting with "MS_deckBuilder_")
+        function getSavedDeckNames() {
+            const prefix = "MS_deckBuilder_";
+            const decks = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(prefix)) {
+                    decks.push(key.slice(prefix.length));
+                }
+            }
+            return decks;
+        }
 
+        // Redirect user to deck builder page and tell it which deck to load
+function loadDeck(deckName) {
+    localStorage.setItem("MS_selectedDeckToLoad", deckName);
+    window.location.href = "index.html";
+}
+
+function displaySavedDecks() {
+    const deckGrid = document.getElementById("deckGrid");
+
+    // Clear previous deck cards except the "Build a Deck" card
+    deckGrid.innerHTML = `
+        <div class="deck-card build-new" onclick="window.location.href='index.html'">
+            <span>Build a Deck!➕</span>
+        </div>
+    `;
+
+    const prefix = "MS_deckBuilder_";
+    let decksFound = false;
+
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(prefix)) {
+            decksFound = true;
+            const deckName = key.slice(prefix.length);
+
+            const deckCard = document.createElement("div");
+            deckCard.className = "deck-card";
+            deckCard.textContent = deckName;
+            deckCard.onclick = () => loadDeck(deckName);
+
+            deckGrid.appendChild(deckCard);
+        }
+    }
+
+    if (!decksFound) {
+        const noDeckMsg = document.createElement("p");
+        noDeckMsg.textContent = "No saved decks found.";
+        noDeckMsg.style.color = "#666";
+        noDeckMsg.style.textAlign = "center";
+        noDeckMsg.style.width = "100%";
+        noDeckMsg.style.marginTop = "40px";
+        deckGrid.appendChild(noDeckMsg);
+    }
+}
+
+displaySavedDecks();
+
+        // Run on page load
+        displaySavedDecks();
     </script>
 </body>
 </html>

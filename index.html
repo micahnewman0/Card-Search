@@ -190,7 +190,7 @@
     <div id="menuSidebar" class = "menuSidebar">
         <ul style="list-style: none; padding: 10px; background: #444; color: white; border-radius: 5px; margin: 10px 0;">
             <li><a href="index.html" style="color: rgb(255, 255, 255); text-decoration: none;">Card search</a></li>
-            <li><a href="saved_Decks.html" style="color: rgb(255, 255, 255); text-decoration: none;">"Saved Decks</a></li> 
+            <li><a href="saved_Decks.html" style="color: rgb(255, 255, 255); text-decoration: none;">Saved Decks</a></li> 
             <li><a id = "closeMenu"; style="color: rgb(255, 255, 255); text-decoration: none;">Close menu</a></li>    
         </ul>
 
@@ -236,6 +236,20 @@
     <!-- Link to External JavaScript File -->
     <script src="cardSearch.js"></script>
 
+    <script> 
+    
+        const selectedDeckName = localStorage.getItem("MS_selectedDeckToLoad");
+        if (selectedDeckName) {
+            const key = "MS_deckBuilder_" + selectedDeckName;
+            const savedDeck = localStorage.getItem(key);
+            if (savedDeck) {
+                deck = JSON.parse(savedDeck);
+                updateDeckDisplay();
+                updateDeckCountsInSearchResults();
+            }
+            localStorage.removeItem("MS_selectedDeckToLoad");
+        }
+    </script>
     <script>
         //const menuButton = document.getElementById('menuButton');
         //const menuSidebar = document.getElementById('menuSidebar');
@@ -286,8 +300,6 @@
     });
 
     </script>
-    <script> 
-
-    </script>
+    
 </body>
 </html>
