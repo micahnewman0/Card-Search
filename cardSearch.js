@@ -90,10 +90,10 @@ function displayResults(cards) {
         deckAdd.title = "Add to deck";
 
         deckAdd.style.position = "absolute";
-        deckAdd.style.width = "50px";
+        deckAdd.style.top = "8px";       // Distance from top
+        deckAdd.style.right = "-12px";     // Distance from right
+        deckAdd.style.width = "50px";    // Adjust size as needed
         deckAdd.style.height = "50px";
-        deckAdd.style.left = "343px";
-        deckAdd.style.top = "-10px";
         deckAdd.style.zIndex = "2";
         deckAdd.style.cursor = "pointer";
 
@@ -106,8 +106,8 @@ function displayResults(cards) {
         deckCount.style.fontSize = "20px";
         
         deckCount.style.position = "absolute"; 
-        deckCount.style.left = "350px";        
-        deckCount.style.top = "45px";          
+        deckCount.style.right = "-7px";        
+        deckCount.style.top = "60px";          
         deckCount.style.zIndex = "2";
         deckCount.style.fontFamily = "Arial, sans-serif";
         deckCount.style.fontSize = "30px";
