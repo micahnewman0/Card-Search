@@ -352,7 +352,7 @@ function updateDeckDisplay() {
         li.appendChild(deckMin);
         li.appendChild(text);
         deckList.appendChild(li);
-        
+
         deckAdd.addEventListener("click", function (event) {
             addToDeck(card);  // Call the function to add card to deck
         });
@@ -429,6 +429,23 @@ function openCardPage(card) {
     // Optionally, you can also add some styling to the new page
     doc.body.style.fontFamily = 'Arial, sans-serif';
     doc.body.style.margin = '20px';
+}
+
+function exportDeck() {
+    let text = "";
+
+    for (let id in deck.cards) {
+        let card = deck.cards[id];
+        text += `${card.count}x${card.Id}\n`;
+    }
+
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            alert("Copied the deck list:\n" + text);
+        })
+        .catch(err => {
+            console.error("Failed to copy: ", err);
+        });
 }
 
 // Call the fetchCards function to start the process
