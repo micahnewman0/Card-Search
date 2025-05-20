@@ -92,7 +92,7 @@ function displayResults(cards) {
         deckAdd.title = "Add to deck";
 
         const deckMin = document.createElement("img");
-        deckMin.src = "https://cdn-icons-png.flaticon.com/512/11527/11527831.png";
+        deckMin.src = "https://icons.veryicon.com/png/o/internet--web/circle-round/subtract-39.png";
         deckMin.alt = "Subtract from deck";
         deckMin.title = "Subtract from deck";
 
@@ -324,12 +324,41 @@ function updateDeckDisplay() {
         img.style.width = '50px';
         img.style.height = '75px';
 
+        const deckAdd = document.createElement("img");
+        deckAdd.src = "https://cdn-icons-png.flaticon.com/512/11527/11527831.png";
+        deckAdd.alt = "Add to deck";
+        deckAdd.title = "Add to deck";
+
+        deckAdd.style.width = "20px";    // Adjust size as needed
+        deckAdd.style.height = "20px";
+        deckAdd.style.cursor = "pointer";
+        deckAdd.style.right = "-100px"
+
+        const deckMin = document.createElement("img");
+        deckMin.src = "https://icons.veryicon.com/png/o/internet--web/circle-round/subtract-39.png";
+        deckMin.alt = "Add to deck";
+        deckMin.title = "Add to deck";
+
+        deckMin.style.width = "20px";    // Adjust size as needed
+        deckMin.style.height = "20px";
+        
+
         const text = document.createElement('p');
         text.textContent = `${card.name} - ${card.Id} - (x${card.count})`;
 
+
         li.appendChild(img);
+        li.appendChild(deckAdd);
+        li.appendChild(deckMin);
         li.appendChild(text);
         deckList.appendChild(li);
+        
+        deckAdd.addEventListener("click", function (event) {
+            addToDeck(card);  // Call the function to add card to deck
+        });
+        deckMin.addEventListener("click", function (event) {
+            subtractFromDeck(card);  // Call the function to add card to deck
+        });
     }
 
     if (!hasCards) {
