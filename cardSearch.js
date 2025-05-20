@@ -32,16 +32,18 @@ function cardSearch(cards) {
         
         const aaOnlyEle = document.getElementById("AltArtOnly");
 
-        const query = searchBar.value.toLowerCase(); // Get the query text from the search bar
-        
+        let query = searchBar.value.toLowerCase(); // Get the query text from the search bar
         // Filter the cards based on query
         const filteredCards = cards.filter(card => {
             const lowerQuery = query.toLowerCase();
 
             const effectMatch = query.match(/3ffect:\s*(.+)/);
             if (effectMatch) {
-                const effectQuery = effectMatch[1].trim();
+                let effectQuery = effectMatch[1].trim();
                 if (effectQuery === "") return false;
+
+                // Convert "-" to "−" to match card text
+                effectQuery = effectQuery.replace(/-/g, "−");
 
                 return card.Text.some(textLine => textLine.toLowerCase().includes(effectQuery));
             }
