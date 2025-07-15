@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buy List</title>
+<style>
+    /* Universal box-sizing for consistent layout */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-color: #F7F3E8; /* original background */
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        color: #333;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    #exportBuyList {
+        padding: 10px 15px;
+        font-size: 16px;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #exportBuyList:hover {
+        background-color: #555;
+    }
+
+    #buyListTotal {
+        font-weight: bold;
+        font-size: 20px;
+        margin: 15px 0;
+    }
+
+    #buyList {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .buy-card {
+        background: transparent; /* no background */
+        padding: 8px;
+        width: 160px;
+        text-align: center;
+        position: relative;
+        border-radius: 0; /* no rounding */
+    }
+
+    .buy-card img { /* Styles for the main card image */
+        width: 160px;
+        height: 240px;
+        object-fit: contain; /* show entire image */
+        margin-bottom: 10px;
+        cursor: pointer;
+        user-select: none;
+        border-radius: 0; /* no rounding */
+    }
+
+    /* === START: Fix for Plus/Minus Buttons === */
+    /* This is the critical change: Directly apply width, height, and object-fit to .icon-btn */
+    .icon-btn {
+        width: 16px;          /* Set the desired width for the button image */
+        height: 16px;         /* Set the desired height for the button image */
+        object-fit: contain;  /* Scale the image down to fit within the set dimensions, maintaining aspect ratio */
+        cursor: pointer;
+        position: absolute;
+        top: 6px;             /* Position from the top edge of the buy-card */
+        user-select: none;
+        transition: filter 0.15s ease;
+    }
+
+    .buy-card .icon-btn.add {
+        right: 6px;           /* Position from the right edge of the buy-card */
+    }
+
+    .buy-card .icon-btn.sub {
+        right: 28px;          /* Position to the left of the add button */
+    }
+    /* === END: Fix for Plus/Minus Buttons === */
+
+    .icon-btn:hover {
+        filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.3));
+    }
+
+    .buy-card p {
+        font-size: 14px;
+        font-weight: 600;
+        color: #222;
+        margin-top: 8px;
+        user-select: none;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 600px) {
+        #buyList {
+            flex-direction: column;
+            align-items: center;
+        }
+        .buy-card {
+            width: 90vw;
+            max-width: 300px;
+        }
+        .buy-card img {
+            width: 100%;
+            height: auto;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <h1>🛒 Buy List</h1>
+    <button id="exportBuyList">Export Buy List</button>
+</div>
+
+<p id="buyListTotal">Total: 0</p>
+<ul id="buyList"></ul>
+
+<script>
+
+let buyList = {
+    cards: {}
+};
+
+function loadBuyList() {
+    const savedList = localStorage.getItem("buyList");
+    if (savedList) {
+        buyList = JSON.parse(savedList);
+    }
+    updateBuyListDisplay();
+}
+
+document.addEventListener("DOMContentLoaded", loadBuyList);
+// Update buy list display
+function updateBuyListDisplay() {
+    const buyListContainer = document.getElementById('buyList');
+    buyListContainer.innerHTML = '';
+
+    let hasCards = false;
+    let totalCount = 0;
+
+    for (let id in buyList.cards) {
+        const card = buyList.cards[id];
+        hasCards = true;
+        totalCount += card.count;
+
+        const li = document.createElement('li');
+        li.className = 'buy-card';
+
+        const img = document.createElement('img');
+        img.src = card.image;
+        img.alt = card.name;
+
+        const text = document.createElement('p');
+        text.textContent = `${card.name} (x${card.count})`;
+
+        const addBtn = document.createElement('img');
+        addBtn.src = "https://cdn-icons-png.flaticon.com/512/11527/11527831.png";
+        addBtn.alt = "Add";
+        addBtn.title = "Add one";
+        
+        const subBtn = document.createElement('img');
+        subBtn.src = "https://icons.veryicon.com/png/o/internet--web/circle-round/subtract-39.png";
+        subBtn.alt = "Subtract";
+        subBtn.title = "Remove one";
+
+        addBtn.addEventListener("click", () => {
+            addToBuyList(card);
+        });
+
+        subBtn.addEventListener("click", () => {
+            subtractFromBuyList(card);
+        });
+
+        // These lines correctly apply the .icon-btn class to the img elements
+        addBtn.classList.add("icon-btn", "add");
+        subBtn.classList.add("icon-btn", "sub");
+
+        li.appendChild(img);
+        li.appendChild(addBtn);
+        li.appendChild(subBtn);
+        li.appendChild(text);
+
+        buyListContainer.appendChild(li);
+    }
+
+    if (!hasCards) {
+        buyListContainer.innerHTML = '<li style="color: #888; font-size: 16px;">No cards in your buy list.</li>';
+    }
+
+    document.getElementById('buyListTotal').textContent = `Total: ${totalCount}`;
+    localStorage.setItem("MS_buyList", JSON.stringify(buyList)); // persist
+}
+
+// Add to buy list
+function addToBuyList(card) {
+    if (!buyList.cards[card.Id]) {
+        buyList.cards[card.Id] = { ...card, count: 1 };
+    } else {
+        buyList.cards[card.Id].count++;
+    }
+    updateBuyListDisplay();
+}
+
+// Subtract from buy list
+function subtractFromBuyList(card) {
+    if (!buyList.cards[card.Id]) return;
+    if (buyList.cards[card.Id].count > 1) {
+        buyList.cards[card.Id].count--;
+    } else {
+        delete buyList.cards[card.Id];
+    }
+    updateBuyListDisplay();
+}
+
+// Export Buy List
+document.getElementById('exportBuyList').addEventListener('click', () => {
+    let exportText = '';
+    for (let id in buyList.cards) {
+        const card = buyList.cards[id];
+        exportText += `${card.count}x ${card.name} (${card.Id})\n`;
+    }
+    navigator.clipboard.writeText(exportText)
+        .then(() => alert("Buy list copied to clipboard!"))
+        .catch(err => console.error("Copy failed:", err));
+});
+
+// Initialize
+updateBuyListDisplay();
+</script>
+
+</body>
+</html>

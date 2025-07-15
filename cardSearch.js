@@ -96,6 +96,16 @@ function displayResults(cards) {
         deckMin.alt = "Subtract from deck";
         deckMin.title = "Subtract from deck";
 
+        const buyListAdd = document.createElement("img");
+        buyListAdd.src = "https://cdn-icons-png.flaticon.com/512/11527/11527831.png";
+        buyListAdd.alt = "Add to buy list";
+        buyListAdd.title = "Add to buy list";
+
+        const buyListMin = document.createElement("img");
+        buyListMin.src = "https://icons.veryicon.com/png/o/internet--web/circle-round/subtract-39.png";
+        buyListMin.alt = "Subtract from buy list";
+        buyListMin.title = "Subtract from buy list";
+
         deckAdd.style.position = "absolute";
         deckAdd.style.top = "8px";       // Distance from top
         deckAdd.style.right = "-12px";     // Distance from right
@@ -111,6 +121,22 @@ function displayResults(cards) {
         deckMin.style.height = "50px";
         deckMin.style.zIndex = "2";
         deckMin.style.cursor = "pointer";
+
+        buyListAdd.style.position = "absolute";
+        buyListAdd.style.top = "80px";       // Distance from top
+        buyListAdd.style.right = "-12px";     // Distance from right
+        buyListAdd.style.width = "50px";    // Adjust size as needed
+        buyListAdd.style.height = "50px";
+        buyListAdd.style.zIndex = "2";
+        buyListAdd.style.cursor = "pointer";
+
+        buyListMin.style.position = "absolute";
+        buyListMin.style.top = "100px";       // Distance from top
+        buyListMin.style.right = "-12px";     // Distance from right
+        buyListMin.style.width = "50px";    // Adjust size as needed
+        buyListMin.style.height = "50px";
+        buyListMin.style.zIndex = "2";
+        buyListMin.style.cursor = "pointer";
 
         const deckCount = document.createElement("p");
         deckCount.textContent = "0";
@@ -157,6 +183,8 @@ function displayResults(cards) {
         cardContainer.appendChild(deckCount);
         cardContainer.appendChild(deckAdd);
         cardContainer.appendChild(deckMin);
+        cardContainer.appendChild(buyListAdd);
+        cardContainer.appendChild(buyListMin);
         cardLink.appendChild(img);
 
 
@@ -171,6 +199,12 @@ function displayResults(cards) {
         });
         deckMin.addEventListener("click", function (event) {
             subtractFromDeck(card);  // Call the function to add card to deck
+        });
+        buyListAdd.addEventListener("click", function (event) {
+            addToBuyList(card);
+        });
+        buyListMin.addEventListener("click", function (event) {
+            subtractFromBuyList(card);
         });
         
 
@@ -211,6 +245,29 @@ function savedDecksUpdate() {
     let name = localStorage(key);
     
     const deckContainer = document.getElementbyId("div");
+
+}
+
+function saveBuyList() {
+    let name = prompt("Enter buy list Name: ").trim();
+    if (!name) {
+        alert("Please enter a buy list name.");
+        return;
+    }
+    name = name.replace(/[^a-zA-Z0-9_\- ]/g, "_");
+
+    const key = "MS_buyListBuilder_" + name;
+    // Save to Google's local storage //
+    localStorage.setItem(key, JSON.stringify(buyList));
+    alert(`buyList "${name}" saved!`);
+    updateBuyListDisplay();
+
+}
+
+function savedBuyListUpdate() {
+    let name = localStorage(key);
+    
+    const buyListContainer = document.getElementbyId("div");
 
 }
 
@@ -304,6 +361,52 @@ function subtractFromDeck(card) {
     updateDeckDisplay();
 }
 
+let buyList = {
+    cards: {}
+};
+function addToBuyList(card) {
+    // Adding or updating the card in the deck
+    if (!buyList.cards[card.Id]) {
+        buyList.cards[card.Id] = {
+            count: 1,
+            name: card.name,
+            image: card.image,
+            Id: card.Id,
+            Type: card.Type,
+            Color: card.Color,
+            Power: card.Power,
+            Affiliations: card.Affiliations,
+            Attributes: card.Attributes,
+            Artist: card.Artist,
+            Text: card.Text,
+            Trigger: card.Trigger,
+            Cost: card.Cost,
+            Counter: card.Counter,
+            Price: card.Price
+        };
+    } else {
+        buyList.cards[card.Id].count++;
+    }
+    localStorage.setItem("buyList", JSON.stringify(buyList));
+    updateBuyListDisplay();
+}
+
+function subtractFromBuyList(card) {
+    if (!buyList.cards[card.Id]) {
+        alert("This card is not in the buy list!");
+        return;
+    }
+
+    if (buyList.cards[card.Id].count > 1) {
+        buyList.cards[card.Id].count--;
+    } else {
+        // count is 1, so remove the card entirely
+        delete buyList.cards[card.Id];
+    }
+    localStorage.setItem("buyList", JSON.stringify(buyList));
+    updateBuyListDisplay();
+}
+
 function updateDeckDisplay() {
     const deckList = document.getElementById('deckList');
     deckList.innerHTML = '';
@@ -367,6 +470,97 @@ function updateDeckDisplay() {
 
     totalCountDisplay.textContent = `Total: ${totalCount}`;
 }
+
+function updateBuyListDisplay() {
+    const buyListContainer = document.getElementById('buyList'); // Should be a container div
+    buyListContainer.innerHTML = ''; // Clear old content
+
+    if (Object.keys(buyList.cards).length === 0) {
+        buyListContainer.innerHTML = '<p style="color: #ccc">No cards are currently in buy list</p>';
+        return;
+    }
+
+    Object.values(buyList.cards).forEach(card => {
+        const cardContainer = document.createElement("div");
+        cardContainer.className = "card";
+        cardContainer.style.position = "relative";
+        cardContainer.style.margin = "10px";
+        cardContainer.style.width = "150px";
+        cardContainer.style.display = "inline-block";
+        cardContainer.style.verticalAlign = "top";
+        cardContainer.style.backgroundColor = "#222"; // or match your search styling background
+        cardContainer.style.borderRadius = "8px";
+        cardContainer.style.padding = "10px";
+        cardContainer.style.color = "white";
+        cardContainer.style.boxShadow = "0 0 10px rgba(0,0,0,0.5)";
+
+        // Card image
+        const img = document.createElement("img");
+        img.src = card.image;
+        img.alt = card.name;
+        img.style.width = "100%";
+        img.style.borderRadius = "5px";
+        img.style.cursor = "pointer";
+
+        // Clicking image opens card page (reuse your function)
+        img.addEventListener("click", () => openCardPage(card));
+
+        // Add / Subtract buttons
+        const buyAdd = document.createElement("img");
+        buyAdd.src = "https://cdn-icons-png.flaticon.com/512/11527/11527831.png";
+        buyAdd.alt = "Add to buy list";
+        buyAdd.title = "Add to buy list";
+        buyAdd.style.width = "30px";
+        buyAdd.style.height = "30px";
+        buyAdd.style.position = "absolute";
+        buyAdd.style.top = "10px";
+        buyAdd.style.right = "40px";
+        buyAdd.style.cursor = "pointer";
+
+        const buyMin = document.createElement("img");
+        buyMin.src = "https://icons.veryicon.com/png/o/internet--web/circle-round/subtract-39.png";
+        buyMin.alt = "Subtract from buy list";
+        buyMin.title = "Subtract from buy list";
+        buyMin.style.width = "30px";
+        buyMin.style.height = "30px";
+        buyMin.style.position = "absolute";
+        buyMin.style.top = "10px";
+        buyMin.style.right = "10px";
+        buyMin.style.cursor = "pointer";
+
+        buyAdd.addEventListener("click", () => addToBuyList(card));
+        buyMin.addEventListener("click", () => subtractFromBuyList(card));
+
+        // Count display
+        const countDisplay = document.createElement("p");
+        countDisplay.textContent = `x${card.count}`;
+        countDisplay.style.position = "absolute";
+        countDisplay.style.bottom = "10px";
+        countDisplay.style.right = "10px";
+        countDisplay.style.backgroundColor = "rgba(0,0,0,0.7)";
+        countDisplay.style.padding = "2px 8px";
+        countDisplay.style.borderRadius = "12px";
+        countDisplay.style.fontWeight = "bold";
+        countDisplay.style.fontSize = "16px";
+
+        // Card text info
+        const cardText = document.createElement("p");
+        cardText.textContent = `${card.name} - ${card.Type} - ${card.Attributes}`;
+        cardText.style.marginTop = "8px";
+        cardText.style.fontSize = "14px";
+        cardText.style.lineHeight = "1.2";
+        cardText.style.textAlign = "center";
+
+        cardContainer.appendChild(img);
+        cardContainer.appendChild(buyAdd);
+        cardContainer.appendChild(buyMin);
+        cardContainer.appendChild(countDisplay);
+        cardContainer.appendChild(cardText);
+
+        buyListContainer.appendChild(cardContainer);
+    });
+}
+
 
 
 // Open new card page on click //
