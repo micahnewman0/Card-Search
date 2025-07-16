@@ -123,7 +123,7 @@ function displayResults(cards) {
         deckMin.style.cursor = "pointer";
 
         buyListAdd.style.position = "absolute";
-        buyListAdd.style.top = "80px";       // Distance from top
+        buyListAdd.style.top = "150px";       // Distance from top
         buyListAdd.style.right = "-12px";     // Distance from right
         buyListAdd.style.width = "50px";    // Adjust size as needed
         buyListAdd.style.height = "50px";
@@ -131,7 +131,7 @@ function displayResults(cards) {
         buyListAdd.style.cursor = "pointer";
 
         buyListMin.style.position = "absolute";
-        buyListMin.style.top = "100px";       // Distance from top
+        buyListMin.style.top = "200px";       // Distance from top
         buyListMin.style.right = "-12px";     // Distance from right
         buyListMin.style.width = "50px";    // Adjust size as needed
         buyListMin.style.height = "50px";

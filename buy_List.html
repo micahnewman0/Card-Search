@@ -5,31 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Buy List</title>
 <style>
-    /* Universal box-sizing for consistent layout */
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-        background-color: #F7F3E8; /* original background */
+        background-color: #ECE2D0;
         font-family: Arial, sans-serif;
         padding: 20px;
         color: #333;
     }
-
-    .top-bar {
+    .top2-bar {
         display: flex;
+        margin-top: 30px;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
-
-    h1 {
-        font-size: 24px;
-    }
-
+    h1 { font-size: 24px; }
     #exportBuyList {
         padding: 10px 15px;
         font-size: 16px;
@@ -40,17 +30,12 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
     }
-
-    #exportBuyList:hover {
-        background-color: #555;
-    }
-
+    #exportBuyList:hover { background-color: #555; }
     #buyListTotal {
         font-weight: bold;
         font-size: 20px;
         margin: 15px 0;
     }
-
     #buyList {
         list-style: none;
         padding: 0;
@@ -59,52 +44,40 @@
         gap: 20px;
         justify-content: center;
     }
-
     .buy-card {
-        background: transparent; /* no background */
+        background: transparent;
         padding: 8px;
         width: 160px;
         text-align: center;
         position: relative;
-        border-radius: 0; /* no rounding */
+        border-radius: 0;
     }
-
-    .buy-card img { /* Styles for the main card image */
+    .card-img { /* Apply only to main card image */
         width: 160px;
         height: 240px;
-        object-fit: contain; /* show entire image */
+        object-fit: contain;
         margin-bottom: 10px;
         cursor: pointer;
         user-select: none;
-        border-radius: 0; /* no rounding */
+        border-radius: 0;
     }
-
-    /* === START: Fix for Plus/Minus Buttons === */
-    /* This is the critical change: Directly apply width, height, and object-fit to .icon-btn */
     .icon-btn {
-        width: 16px;          /* Set the desired width for the button image */
-        height: 16px;         /* Set the desired height for the button image */
-        object-fit: contain;  /* Scale the image down to fit within the set dimensions, maintaining aspect ratio */
-        cursor: pointer;
+        width: 20px;
+        height: 20px;
         position: absolute;
-        top: 6px;             /* Position from the top edge of the buy-card */
+        cursor: pointer;
         user-select: none;
         transition: filter 0.15s ease;
     }
-
-    .buy-card .icon-btn.add {
-        right: 6px;           /* Position from the right edge of the buy-card */
+    .buy-card .sub {
+        top: 10px;
+        right: -15px;
     }
-
-    .buy-card .icon-btn.sub {
-        right: 28px;          /* Position to the left of the add button */
+    .buy-card .add {
+        top: 10px;
+        right:6px;
     }
-    /* === END: Fix for Plus/Minus Buttons === */
-
-    .icon-btn:hover {
-        filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.3));
-    }
-
+    .icon-btn:hover { filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.3)); }
     .buy-card p {
         font-size: 14px;
         font-weight: 600;
@@ -112,27 +85,50 @@
         margin-top: 8px;
         user-select: none;
     }
-
-    /* Responsive adjustments for smaller screens */
     @media (max-width: 600px) {
-        #buyList {
-            flex-direction: column;
-            align-items: center;
-        }
-        .buy-card {
-            width: 90vw;
-            max-width: 300px;
-        }
-        .buy-card img {
-            width: 100%;
-            height: auto;
-        }
+        #buyList { flex-direction: column; align-items: center; }
+        .buy-card { width: 90vw; max-width: 300px; }
+        .card-img { width: 100%; height: auto; }
     }
+    .top-bar { position: absolute; top: 0; z-index:4; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-top: 15px; }
+    .menuSidebar {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100%;
+        background-color: #333;
+        color: white;
+        padding-top: 60px;
+        transition: 0.5s;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    #menuButton {
+        padding: 8px 10px;
+        top: 25px;
+        font-size: 18px;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        background-color: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+    #menuButton:hover { background-color: #555; }
+    #closeMenu { cursor: pointer; }
 </style>
 </head>
 <body>
 
-<div class="top-bar">
+<div class="top2-bar">
     <h1>🛒 Buy List</h1>
     <button id="exportBuyList">Export Buy List</button>
 </div>
@@ -140,26 +136,40 @@
 <p id="buyListTotal">Total: 0</p>
 <ul id="buyList"></ul>
 
-<script>
+<div class="top-bar">
+    <button id="menuButton">☰</button>
+</div>
 
-let buyList = {
-    cards: {}
-};
+<div id="menuSidebar" class="menuSidebar">
+    <ul style="list-style: none; padding: 10px; background: #444; color: white; border-radius: 5px; margin: 10px 0;">
+        <li><a href="index.html" style="color: white; text-decoration: none;">Card search</a></li>
+        <li><a href="saved_Decks.html" style="color: white; text-decoration: none;">Saved Decks</a></li>
+        <li><a href="buy_List.html" style="color:white; text-decoration: none;">Buy List</a></li>
+        <li><a id="closeMenu" style="color: white; text-decoration: none;">Close menu</a></li>
+    </ul>
+</div>
+
+<script>
+const menuButton = document.getElementById('menuButton');
+const menuSidebar = document.getElementById('menuSidebar');
+const closeMenu = document.getElementById("closeMenu");
+
+menuButton.addEventListener('click', () => { menuSidebar.style.left = '0'; });
+closeMenu.addEventListener('click', () => { menuSidebar.style.left = '-250px'; });
+
+let buyList = { cards: {} };
 
 function loadBuyList() {
     const savedList = localStorage.getItem("buyList");
-    if (savedList) {
-        buyList = JSON.parse(savedList);
-    }
+    if (savedList) { buyList = JSON.parse(savedList); }
     updateBuyListDisplay();
 }
 
 document.addEventListener("DOMContentLoaded", loadBuyList);
-// Update buy list display
+
 function updateBuyListDisplay() {
     const buyListContainer = document.getElementById('buyList');
     buyListContainer.innerHTML = '';
-
     let hasCards = false;
     let totalCount = 0;
 
@@ -174,6 +184,7 @@ function updateBuyListDisplay() {
         const img = document.createElement('img');
         img.src = card.image;
         img.alt = card.name;
+        img.className = 'card-img';
 
         const text = document.createElement('p');
         text.textContent = `${card.name} (x${card.count})`;
@@ -182,23 +193,16 @@ function updateBuyListDisplay() {
         addBtn.src = "https://cdn-icons-png.flaticon.com/512/11527/11527831.png";
         addBtn.alt = "Add";
         addBtn.title = "Add one";
-        
+        addBtn.classList.add("icon-btn", "add");
+
         const subBtn = document.createElement('img');
         subBtn.src = "https://icons.veryicon.com/png/o/internet--web/circle-round/subtract-39.png";
         subBtn.alt = "Subtract";
         subBtn.title = "Remove one";
-
-        addBtn.addEventListener("click", () => {
-            addToBuyList(card);
-        });
-
-        subBtn.addEventListener("click", () => {
-            subtractFromBuyList(card);
-        });
-
-        // These lines correctly apply the .icon-btn class to the img elements
-        addBtn.classList.add("icon-btn", "add");
         subBtn.classList.add("icon-btn", "sub");
+
+        addBtn.addEventListener("click", () => { addToBuyList(card); });
+        subBtn.addEventListener("click", () => { subtractFromBuyList(card); });
 
         li.appendChild(img);
         li.appendChild(addBtn);
@@ -213,10 +217,9 @@ function updateBuyListDisplay() {
     }
 
     document.getElementById('buyListTotal').textContent = `Total: ${totalCount}`;
-    localStorage.setItem("MS_buyList", JSON.stringify(buyList)); // persist
+    localStorage.setItem("MS_buyList", JSON.stringify(buyList));
 }
 
-// Add to buy list
 function addToBuyList(card) {
     if (!buyList.cards[card.Id]) {
         buyList.cards[card.Id] = { ...card, count: 1 };
@@ -226,7 +229,6 @@ function addToBuyList(card) {
     updateBuyListDisplay();
 }
 
-// Subtract from buy list
 function subtractFromBuyList(card) {
     if (!buyList.cards[card.Id]) return;
     if (buyList.cards[card.Id].count > 1) {
@@ -237,7 +239,6 @@ function subtractFromBuyList(card) {
     updateBuyListDisplay();
 }
 
-// Export Buy List
 document.getElementById('exportBuyList').addEventListener('click', () => {
     let exportText = '';
     for (let id in buyList.cards) {
@@ -249,7 +250,6 @@ document.getElementById('exportBuyList').addEventListener('click', () => {
         .catch(err => console.error("Copy failed:", err));
 });
 
-// Initialize
 updateBuyListDisplay();
 </script>
 
