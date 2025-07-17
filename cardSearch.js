@@ -361,9 +361,8 @@ function subtractFromDeck(card) {
     updateDeckDisplay();
 }
 
-let buyList = {
-    cards: {}
-};
+let buyList = JSON.parse(localStorage.getItem("buyList")) || { cards: {} };
+
 function addToBuyList(card) {
     // Adding or updating the card in the deck
     if (!buyList.cards[card.Id]) {
