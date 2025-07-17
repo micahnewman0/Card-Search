@@ -157,7 +157,7 @@ const closeMenu = document.getElementById("closeMenu");
 menuButton.addEventListener('click', () => { menuSidebar.style.left = '0'; });
 closeMenu.addEventListener('click', () => { menuSidebar.style.left = '-250px'; });
 
-let buyList = { cards: {} };
+let buyList = JSON.parse(localStorage.getItem("buyList")) || { cards: {} };
 
 function loadBuyList() {
     const savedList = localStorage.getItem("buyList");
@@ -217,7 +217,7 @@ function updateBuyListDisplay() {
     }
 
     document.getElementById('buyListTotal').textContent = `Total: ${totalCount}`;
-    localStorage.setItem("MS_buyList", JSON.stringify(buyList));
+    localStorage.setItem("buyList", JSON.stringify(buyList)); // ✅ corrected key
 }
 
 function addToBuyList(card) {
