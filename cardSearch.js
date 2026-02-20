@@ -226,19 +226,29 @@ let deck = {
 };
 
 function saveDeck() {
-    let name = prompt("Enter Deck Name: ").trim();
+    let name = prompt("Enter Deck Name:").trim();
     if (!name) {
         alert("Please enter a deck name.");
         return;
     }
+
+    // Sanitize name
     name = name.replace(/[^a-zA-Z0-9_\- ]/g, "_");
-
     const key = "MS_deckBuilder_" + name;
-    // Save to Google's local storage //
-    localStorage.setItem(key, JSON.stringify(deck));
-    alert(`Deck "${name}" saved!`);
-    updateDeckDisplay();
 
+    // Save deck in localStorage
+    localStorage.setItem(key, JSON.stringify(deck));
+
+    // Generate shareable URL
+    const encodedDeck = encodeURIComponent(JSON.stringify(deck));
+    const baseURL = "https://yourwebsite.com/deck.html"; // Change to your hosted page
+    const shareURL = `${baseURL}?deck=${encodedDeck}`;
+
+    // Show URL so you can write it to an NFC tag
+    prompt("Shareable deck URL (copy to NFC):", shareURL);
+
+    alert(`Deck "${name}" saved! You can now share it via NFC.`);
+    displaySavedDecks(); // Refresh saved deck display
 }
 
 function savedDecksUpdate() {
