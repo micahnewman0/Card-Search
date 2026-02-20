@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <title>Saved Decks</title>
     <style>
-        #closeMenu {
-            cursor: pointer;
-        }
+        #closeMenu { cursor: pointer; }
+
         .deck-grid {
             display: flex;
             flex-wrap: wrap;
@@ -14,6 +13,7 @@
             justify-content: center;
             padding: 20px;
         }
+
         .deck-card {
             width: 200px;
             height: 150px;
@@ -29,24 +29,27 @@
             transition: transform 0.2s ease, background-color 0.2s ease;
             user-select: none;
         }
+
         .deck-card:hover {
             transform: scale(1.05);
             background-color: #f4f4f4;
         }
+
         .build-new {
             background-color: #d1e7dd;
             border: 2px dashed #28a745;
             color: #155724;
         }
-        .build-new:hover {
-            background-color: #c3e6cb;
-        }
+
+        .build-new:hover { background-color: #c3e6cb; }
+
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
+
         #menuButton {
             padding: 8px 10px;
             font-size: 18px;
@@ -62,9 +65,9 @@
             justify-content: center;
             transition: background-color 0.3s ease;
         }
-        #menuButton:hover {
-            background-color: #555;
-        }
+
+        #menuButton:hover { background-color: #555; }
+
         body {
             background-color: #ECE2D0;
             background-size: cover;
@@ -73,6 +76,7 @@
             font-family: Arial, sans-serif;
             padding: 20px;
         }
+
         .menuSidebar {
             position: fixed;
             top: 0;
@@ -85,6 +89,7 @@
             transition: 0.5s;
             z-index: 1;
         }
+
         .menuSidebar ul {
             list-style: none;
             padding: 10px;
@@ -93,84 +98,94 @@
             border-radius: 5px;
             margin: 10px 0;
         }
+
         .menuSidebar a {
             color: white;
             text-decoration: none;
             display: block;
             padding: 8px 0;
         }
-        .menuSidebar a:hover {
-            text-decoration: underline;
-        }
+
+        .menuSidebar a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <button id="menuButton">☰</button>
+
+<div class="top-bar">
+    <button id="menuButton">☰</button>
+</div>
+
+<div id="menuSidebar" class="menuSidebar">
+    <ul>
+        <li><a href="index.html">Card search</a></li>
+        <li><a href="saved_Decks.html">Saved Decks</a></li>
+        <li><a href="buy_List.html">Buy List</a></li>
+        <li><a id="closeMenu">Close menu</a></li>
+    </ul>
+</div>
+
+<div class="deck-grid" id="deckGrid">
+    <div class="deck-card build-new" onclick="startNewDeck()">
+        <span>Build a Deck!➕</span>
     </div>
+</div>
 
-    <div id="menuSidebar" class = "menuSidebar">
-        <ul style="list-style: none; padding: 10px; background: #444; color: white; border-radius: 5px; margin: 10px 0;">
-            <li><a href="index.html" style="color: rgb(255, 255, 255); text-decoration: none;">Card search</a></li>
-            <li><a href="saved_Decks.html" style="color: rgb(255, 255, 255); text-decoration: none;">Saved Decks</a></li> 
-            <li><a href="buy_List.html" style="color:white; text-decoration: none;">Buy List</a></li>
-            <li><a id = "closeMenu"; style="color: rgb(255, 255, 255); text-decoration: none;">Close menu</a></li>    
-        </ul>
-        </div>
-    
-    <div class="deck-grid" id="deckGrid">
-        <div class="deck-card build-new" onclick="startNewDeck()">
-            <span>Build a Deck!➕</span>
-        </div>
-    </div>
-    <script>
-        function startNewDeck() {
+<script>
+function startNewDeck() {
+    localStorage.removeItem("MS_selectedDeckToLoad");
+    localStorage.removeItem("MS_tempDeck");
+    window.location.href = 'index.html';
+}
 
-            localStorage.removeItem("MS_selectedDeckToLoad");
-            localStorage.removeItem("MS_tempDeck");
-            window.location.href = 'index.html';
-        }
-    </script>
-    <script>
-        // Sidebar toggle
-        const menuButton = document.getElementById('menuButton');
-        const menuSidebar = document.getElementById('menuSidebar');
-        const closeMenu = document.getElementById('closeMenu');
+// Sidebar toggle
+const menuButton = document.getElementById('menuButton');
+const menuSidebar = document.getElementById('menuSidebar');
+const closeMenu = document.getElementById('closeMenu');
 
-        menuButton.addEventListener('click', () => {
-            menuSidebar.style.left = '0';
-        });
+menuButton.addEventListener('click', () => {
+    menuSidebar.style.left = '0';
+});
 
-        closeMenu.addEventListener('click', (e) => {
-            e.preventDefault();
-            menuSidebar.style.left = '-250px';
-        });
+closeMenu.addEventListener('click', (e) => {
+    e.preventDefault();
+    menuSidebar.style.left = '-250px';
+});
 
-        // Fetch all saved decks from localStorage (keys starting with "MS_deckBuilder_")
-        function getSavedDeckNames() {
-            const prefix = "MS_deckBuilder_";
-            const decks = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith(prefix)) {
-                    decks.push(key.slice(prefix.length));
-                }
-            }
-            return decks;
-        }
-
-        // Redirect user to deck builder page and tell it which deck to load
+// NEW loadDeck function (opens standalone viewer page)
 function loadDeck(deckName) {
-    localStorage.setItem("MS_selectedDeckToLoad", deckName);
-    window.location.href = "index.html";
+    const prefix = "MS_deckBuilder_";
+    const deckKey = prefix + deckName;
+
+    const savedDeck = localStorage.getItem(deckKey);
+    if (!savedDeck) return;
+
+    const deckObj = JSON.parse(savedDeck);
+
+    let deckString = "";
+
+    // Leader first
+    if (deckObj.leader) {
+        deckString += deckObj.leader.name + ":1,";
+    }
+
+    // Then all other cards
+    if (deckObj.cards && Array.isArray(deckObj.cards)) {
+        deckObj.cards.forEach(card => {
+            deckString += card.name + ":" + card.count + ",";
+        });
+    }
+
+    deckString = deckString.slice(0, -1);
+    const encodedDeck = encodeURIComponent(deckString);
+
+    window.location.href = "deck_viewer.html?deck=" + encodedDeck;
 }
 
 function displaySavedDecks() {
     const deckGrid = document.getElementById("deckGrid");
 
-    // Clear previous deck cards except the "Build a Deck" card
     deckGrid.innerHTML = `
-        <div class="deck-card build-new" onclick="window.location.href='index.html'">
+        <div class="deck-card build-new" onclick="startNewDeck()">
             <span>Build a Deck!➕</span>
         </div>
     `;
@@ -180,6 +195,7 @@ function displaySavedDecks() {
 
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
+
         if (key.startsWith(prefix)) {
             decksFound = true;
             const deckName = key.slice(prefix.length);
@@ -205,9 +221,7 @@ function displaySavedDecks() {
 }
 
 displaySavedDecks();
+</script>
 
-        // Run on page load
-        displaySavedDecks();
-    </script>
 </body>
 </html>
